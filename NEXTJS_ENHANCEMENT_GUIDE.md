@@ -31,14 +31,14 @@
 **Time:** 3-4 hours  
 **Focus:** Get app deployed and create RESTful API
 
-#### Part 1: Deploy to Vercel (~1 hour)
+#### Part 1: Deploy to Vercel (~1 hour) ✅ COMPLETED
 
-- [ ] Create Vercel account (if needed)
-- [ ] Push kanban-next to GitHub repo
-- [ ] Import project to Vercel
-- [ ] Configure build settings (build command: `npm run build`)
-- [ ] Deploy and test live URL
-- [ ] Update README with live link
+- [x] Create Vercel account (already had one)
+- [x] Push kanban-next to GitHub repo: https://github.com/AntonioMontalvo/kanban-next
+- [x] Import project to Vercel (learned about GitHub app permissions)
+- [x] Configure build settings (auto-detected Next.js)
+- [x] Deploy and test live URL: https://kanban-next-flame.vercel.app/
+- [x] Update README with live link and full documentation
 
 #### Part 2: Create API Routes (~2-3 hours) ✅ COMPLETED
 
