@@ -29,7 +29,8 @@ A modern, full-featured Kanban board built with Next.js 16, TypeScript, and Tail
 ## 📦 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 
 ### Installation
@@ -83,6 +84,7 @@ Deployed on Vercel: [https://kanban-next-flame.vercel.app/](https://kanban-next-
 ## 👤 Author
 
 **Antonio Montalvo**
+
 - GitHub: [@AntonioMontalvo](https://github.com/AntonioMontalvo)
 - Portfolio: [antonio-portfolio-master-bt2g.vercel.app](https://antonio-portfolio-master-bt2g.vercel.app/)
 

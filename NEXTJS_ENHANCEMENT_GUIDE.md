@@ -64,63 +64,74 @@
 
 ---
 
-### **Day 2 (Jan 21): PostgreSQL Database Setup** 💾
+### **Day 2 (Jan 21): PostgreSQL Database Setup** 💾 ✅ COMPLETED
 
-**Time:** 4-6 hours  
+**Time:** 5 hours actual  
 **Focus:** Replace in-memory storage with real database
 
-#### Part 1: Set Up Vercel Postgres (~1 hour)
+#### Part 1: Set Up Vercel Postgres (~1 hour) ✅
 
-- [ ] Go to Vercel dashboard → Storage → Create Database
-- [ ] Choose Postgres (Vercel Postgres powered by Neon)
-- [ ] Connect database to project
-- [ ] Copy environment variables to `.env.local`
-- [ ] Install `@vercel/postgres` package
-- [ ] Test connection in API route
+- [x] Go to Vercel dashboard → Storage → Create Database
+- [x] Choose Postgres (Vercel Postgres powered by Neon)
+- [x] Connect database to project
+- [x] Copy environment variables to `.env.local`
+- [x] Install `@vercel/postgres` package
+- [x] Test connection in API route (`/api/test-db`)
 
-#### Part 2: Create Database Schema (~1 hour)
+#### Part 2: Create Database Schema (~1.5 hours) ✅
 
-- [ ] Design tasks table schema:
+- [x] Design tasks table schema:
   ```sql
   CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    status VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    status VARCHAR(50) NOT NULL,  -- "column" is reserved keyword!
+    created_at TIMESTAMP DEFAULT NOW()
   );
   ```
-- [ ] Create migration script or use Vercel SQL editor
-- [ ] Run migration to create table
-- [ ] Verify table exists
+- [x] Create migration endpoint (`/api/setup-db`)
+- [x] Run migration to create table
+- [x] Insert sample data (3 tasks across all statuses)
+- [x] Verify table exists in Vercel dashboard
+- [x] **Lesson learned:** "column" is SQL reserved keyword → use "status"
 
-#### Part 3: Update API Routes with SQL (~2-3 hours)
+#### Part 3: Update API Routes with SQL (~2 hours) ✅
 
-- [ ] Update GET `/api/tasks` to query PostgreSQL
-- [ ] Update POST `/api/tasks` to INSERT into database
-- [ ] Update GET `/api/tasks/[id]` to query by ID
-- [ ] Update PUT `/api/tasks/[id]` to UPDATE database
-- [ ] Update DELETE `/api/tasks/[id]` to DELETE from database
-- [ ] Add error handling for database operations
-- [ ] Test all endpoints with real data
+- [x] Update GET `/api/tasks` to query PostgreSQL
+- [x] Update POST `/api/tasks` to INSERT with RETURNING
+- [x] Update GET `/api/tasks/[id]` to query by ID
+- [x] Update PUT `/api/tasks/[id]` to UPDATE with dynamic fields
+- [x] Update DELETE `/api/tasks/[id]` to DELETE with RETURNING
+- [x] Add error handling for all database operations
+- [x] Implement field mapping (database "status" ↔ frontend "column")
+- [x] Test all endpoints with curl
 
-#### Part 4: Testing & Debugging (~1 hour)
+#### Part 4: Testing & Debugging (~30 min) ✅
 
-- [ ] Test creating tasks
-- [ ] Test updating task status (drag-drop)
-- [ ] Test editing tasks
-- [ ] Test deleting tasks
-- [ ] Verify data persists after page refresh
-- [ ] Check Vercel Postgres dashboard for data
-- [ ] Commit: "Add PostgreSQL database persistence"
+- [x] Test creating tasks (POST) ✅
+- [x] Test updating task (PUT) ✅
+- [x] Test deleting tasks (DELETE) ✅
+- [x] Test 404 error handling ✅
+- [x] Verify data persists after page refresh ✅
+- [x] Check Vercel Postgres dashboard for data ✅
+- [x] All 27 tests still passing ✅
+- [ ] Commit: "Add PostgreSQL database persistence" (pending)
+
+#### Bonus: Documentation Created 📚
+
+- [x] SQL_FUNDAMENTALS.md (850+ lines) - Complete SQL reference
+- [x] REACT_TESTING_REFERENCE.md (900+ lines) - Testing guide
 
 **Deliverables:**
 
 - ✅ PostgreSQL database connected
-- ✅ Tasks table created
-- ✅ All API routes using database
+- ✅ Tasks table created with proper schema
+- ✅ All API routes using database with parameterized queries
 - ✅ Data persists across sessions
+- ✅ Field mapping working (status ↔ column)
+- ✅ Error handling for 404s and database failures
+- ✅ All CRUD operations tested and working
 
 **Resources:**
 

@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { taskStore } from "@/lib/taskStore";
+import { sql } from "@vercel/postgres";
 
-// GET /api/tasks - Get all tasks
+// GET /api/tasks - Get all tasks from database
 export async function GET() {
   try {
-    const tasks = taskStore.getTasks();
+    const result = await sql`SELECT * FROM tasks ORDER BY created_at DESC`;
 
-    // Return JSON response with 200 status
+    // Map database rows to match frontend Task interface
+    const tasks = result.rows.map((row) => ({
+      id: row.id.toString(),
+      title: row.title,
+      description: row.description || "",
+      column: row.status, // Database uses 'status', frontend uses 'column'
+      createdAt: new Date(row.created_at).getTime(),
+    }));
+
     return NextResponse.json({ tasks }, { status: 200 });
   } catch (error) {
     console.error("Error fetching tasks:", error);
-
-    // Return error response with 500 status
     return NextResponse.json(
       { error: "Failed to fetch tasks" },
       { status: 500 }
@@ -19,37 +25,39 @@ export async function GET() {
   }
 }
 
-// POST /api/tasks - Create a new task
+// POST /api/tasks - Create a new task in database
 export async function POST(request: NextRequest) {
   try {
-    // Parse JSON body from request
     const body = await request.json();
-    const { title, description, column, createdAt } = body;
+    const { title, description, column } = body;
 
-    // Validation - ensure required fields exist
+    // Validation
     if (!title || !column) {
       return NextResponse.json(
         { error: "Title and column are required" },
-        { status: 400 } // 400 = Bad Request
+        { status: 400 }
       );
     }
 
-    // Create new task using taskStore
-    const newTask = taskStore.createTask({
-      title,
-      description: description || "",
-      column,
-      createdAt: createdAt || Date.now(),
-    });
+    // Insert into database
+    const result = await sql`
+      INSERT INTO tasks (title, description, status)
+      VALUES (${title}, ${description || ""}, ${column})
+      RETURNING *
+    `;
 
-    // Return created task with 201 status
-    return NextResponse.json(
-      { task: newTask },
-      { status: 201 } // 201 = Created
-    );
+    const row = result.rows[0];
+    const newTask = {
+      id: row.id.toString(),
+      title: row.title,
+      description: row.description || "",
+      column: row.status,
+      createdAt: new Date(row.created_at).getTime(),
+    };
+
+    return NextResponse.json({ task: newTask }, { status: 201 });
   } catch (error) {
     console.error("Error creating task:", error);
-
     return NextResponse.json(
       { error: "Failed to create task" },
       { status: 500 }
