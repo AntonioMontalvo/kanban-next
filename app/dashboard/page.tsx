@@ -3,6 +3,15 @@ import Link from "next/link";
 import { DashboardCharts } from "@/components/DashboardCharts";
 import { Suspense } from "react";
 
+// Database Task type (matches PostgreSQL schema)
+interface DBTask {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  created_at: string;
+}
+
 /**
  * Dashboard Page - Server Component
  *
@@ -51,8 +60,8 @@ function DashboardSkeleton() {
 export default async function DashboardPage() {
   // Fetch tasks directly from database
   // This runs on the SERVER, not in the browser
-  const result = await sql`SELECT * FROM tasks`;
-  const tasks = result.rows;
+  const result = await sql<DBTask>`SELECT * FROM tasks`;
+  const tasks: DBTask[] = result.rows;
 
   // Calculate statistics
   const totalTasks = tasks.length;
