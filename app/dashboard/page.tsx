@@ -1,7 +1,12 @@
 import { sql } from "@vercel/postgres";
 import Link from "next/link";
 import { DashboardCharts } from "@/components/DashboardCharts";
+import { RefreshButton } from "@/components/RefreshButton";
 import { Suspense } from "react";
+
+// Disable caching for this page to always show fresh data
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Database Task type (matches PostgreSQL schema)
 interface DBTask {
@@ -23,6 +28,8 @@ interface DBTask {
  * - No API route needed
  * - Better for SEO
  * - Reduced client-side JavaScript
+ * 
+ * Note: Set to dynamic rendering to always fetch fresh data
  */
 
 // Loading component for the dashboard
@@ -82,25 +89,28 @@ export default async function DashboardPage() {
             <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
             <p className="mt-2 text-gray-600">Task statistics and analytics</p>
           </div>
-          <Link
-            href="/"
-            className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium shadow-sm"
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex gap-3">
+            <RefreshButton />
+            <Link
+              href="/"
+              className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium shadow-sm"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
-              />
-            </svg>
-            Back to Board
-          </Link>
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+                />
+              </svg>
+              Back to Board
+            </Link>
+          </div>
         </div>
 
         {/* Stats Grid */}
