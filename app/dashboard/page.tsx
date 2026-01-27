@@ -2,6 +2,9 @@ import { sql } from "@vercel/postgres";
 import Link from "next/link";
 import { DashboardCharts } from "@/components/DashboardCharts";
 import { RefreshButton } from "@/components/RefreshButton";
+import { UserMenu } from "@/components/UserMenu";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 // Disable caching for this page to always show fresh data
@@ -65,6 +68,14 @@ function DashboardSkeleton() {
 }
 
 export default async function DashboardPage() {
+  // Check if user is authenticated
+  const session = await auth();
+  
+  // If not authenticated, redirect to login
+  if (!session?.user) {
+    redirect("/login");
+  }
+
   // Fetch tasks directly from database
   // This runs on the SERVER, not in the browser
   const result = await sql<DBTask>`SELECT * FROM tasks`;
@@ -89,7 +100,7 @@ export default async function DashboardPage() {
             <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
             <p className="mt-2 text-gray-600">Task statistics and analytics</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
             <RefreshButton />
             <Link
               href="/"
@@ -110,10 +121,7 @@ export default async function DashboardPage() {
               </svg>
               Back to Board
             </Link>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
+          <UserMenu user={session.user} />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Tasks Card */}
           <div className="bg-white rounded-lg shadow p-6">
