@@ -200,33 +200,33 @@
 
 ---
 
-### **Day 4 (Jan 23): NextAuth.js Authentication - Part 1** 🔐
+### **Day 4 (Jan 27): NextAuth.js Authentication** 🔐 ✅ COMPLETED
 
-**Time:** 4-5 hours  
-**Focus:** Set up NextAuth with OAuth providers
+**Time:** 5 hours actual (split morning/afternoon)  
+**Focus:** Set up NextAuth with OAuth and multi-user database
 
-#### Part 1: Install & Configure NextAuth (~1-2 hours)
+#### Part 1: Install & Configure NextAuth (~1-2 hours) ✅
 
-- [ ] Install: `npm install next-auth@beta` (for Next.js 15+)
-- [ ] Create `app/api/auth/[...nextauth]/route.ts`
-- [ ] Configure Google OAuth:
+- [x] Install: `npm install next-auth@beta` (for Next.js 15+)
+- [x] Create `app/api/auth/[...nextauth]/route.ts`
+- [x] Configure Google OAuth:
   - Go to Google Cloud Console
   - Create OAuth 2.0 credentials
   - Add authorized redirect URIs
   - Copy Client ID and Secret
-- [ ] Add environment variables to `.env.local`:
+- [x] Add environment variables to `.env.local`:
   ```
   NEXTAUTH_URL=http://localhost:3000
   NEXTAUTH_SECRET=<generate-with-openssl>
   GOOGLE_CLIENT_ID=...
   GOOGLE_CLIENT_SECRET=...
   ```
-- [ ] Set up basic NextAuth config
-- [ ] Test login/logout flow
+- [x] Set up basic NextAuth config (auth.config.ts, auth.ts)
+- [x] Test login/logout flow
 
-#### Part 2: Add User Table to Database (~1 hour)
+#### Part 2: Add User Table to Database (~1.5 hours) ✅
 
-- [ ] Create users table schema:
+- [x] Create users table schema:
   ```sql
   CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -236,28 +236,38 @@
     created_at TIMESTAMP DEFAULT NOW()
   );
   ```
-- [ ] Add `user_id` column to tasks table:
+- [x] Add `user_id` column to tasks table:
   ```sql
   ALTER TABLE tasks ADD COLUMN user_id INTEGER REFERENCES users(id);
   ```
-- [ ] Run migrations
+- [x] Run migrations via `/api/migrate-users` endpoint
+- [x] Update auth.config.ts to save users to database on sign-in
+- [x] Update all task API routes to filter by user_id
+- [x] Update dashboard to show only user's tasks
+- [x] Test multi-user data isolation
 
-#### Part 3: Add Login UI (~1-2 hours)
+#### Part 3: Add Login UI (~1.5 hours) ✅
 
-- [ ] Create `app/login/page.tsx` with sign-in buttons
-- [ ] Add SessionProvider to app layout
-- [ ] Create header component with user avatar/logout
-- [ ] Protect board page (redirect to login if not authenticated)
-- [ ] Style login page with Tailwind
-- [ ] Test complete auth flow
-- [ ] Commit: "Add NextAuth.js authentication with Google OAuth"
+- [x] Create `app/login/page.tsx` with Google sign-in button
+- [x] Create UserMenu component with avatar dropdown
+- [x] Protect board page (redirect to login if not authenticated)
+- [x] Protect dashboard page
+- [x] Configure Next.js Image for Google profile images
+- [x] Style login page with Tailwind (gradient, icons)
+- [x] Test complete auth flow
+- [x] Commit: "Add NextAuth.js authentication with Google OAuth" (63c9301)
+- [x] Commit: "Add multi-user database support" (e77d9e1)
 
 **Deliverables:**
 
-- ✅ NextAuth.js configured
-- ✅ Google OAuth login working
-- ✅ User table in database
-- ✅ Login page and protected routes
+- ✅ NextAuth.js configured with Google OAuth
+- ✅ Beautiful login page with gradient design
+- ✅ Protected routes with auth checks
+- ✅ UserMenu component with avatar and dropdown
+- ✅ Users table in database
+- ✅ Multi-user support with data isolation
+- ✅ All task operations filtered by user_id
+- ✅ Dashboard shows user-specific stats
 
 **Resources:**
 
@@ -271,20 +281,20 @@
 **Time:** 3-4 hours  
 **Focus:** Complete multi-user support and testing
 
-#### Part 1: Associate Tasks with Users (~2 hours)
+#### Part 1: Associate Tasks with Users (~2 hours) ✅ COMPLETED IN DAY 4
 
-- [ ] Update POST `/api/tasks` to save `user_id` from session
-- [ ] Update GET `/api/tasks` to filter by `user_id`
-- [ ] Update PUT/DELETE to verify ownership
-- [ ] Add middleware to protect API routes
-- [ ] Test with multiple Google accounts
+- [x] Update POST `/api/tasks` to save `user_id` from session
+- [x] Update GET `/api/tasks` to filter by `user_id`
+- [x] Update PUT/DELETE to verify ownership
+- [x] Added auth checks to all API routes (401 if not authenticated)
+- [ ] Test with multiple Google accounts (optional - for tomorrow)
 
-#### Part 2: Enhanced Features (~1 hour)
+#### Part 2: Enhanced Features (~1 hour) ⚡ PARTIALLY COMPLETE
 
-- [ ] Update dashboard to show user-specific stats
-- [ ] Add "My Tasks" vs "All Tasks" toggle (optional)
-- [ ] Add user profile page (optional)
-- [ ] Improve error messages for auth failures
+- [x] Update dashboard to show user-specific stats
+- [ ] Add "My Tasks" vs "All Tasks" toggle (optional - bonus)
+- [ ] Add user profile page (optional - bonus)
+- [ ] Improve error messages for auth failures (optional)
 
 #### Part 3: Testing & Documentation (~1 hour)
 
@@ -380,6 +390,45 @@
    - Rendering strategies
    - Data fetching patterns
    - Performance implications
+
+### Database Visual Access Tools:
+
+**MongoDB Atlas (EcommerceApp):**
+
+- Built-in web UI for browsing collections
+- MongoDB Compass desktop app
+- VS Code extension: "MongoDB for VS Code"
+- Direct JSON document view
+
+**PostgreSQL (KanbanBoard):**
+
+- **Vercel Dashboard** → Storage → Data tab (easiest, built-in)
+- **Neon Console** (https://console.neon.tech) - the actual database provider
+- **pgAdmin** (free) - most popular PostgreSQL GUI tool
+  - `brew install --cask pgadmin4`
+  - Full database management, query editor, schema visualization
+- **TablePlus** (paid, $89) - beautiful modern Mac app
+  - `brew install --cask tableplus`
+  - Multi-database support, SQL autocomplete, spreadsheet-like editing
+- **Postico** (Mac) - PostgreSQL-specific client
+- **VS Code Extension** - "SQLTools" + "SQLTools PostgreSQL Driver"
+  - Browse tables, run queries, see data in editor
+- **Custom API Endpoints** - `/api/users`, `/api/debug/tasks`
+  - Quick JSON views without extra tools
+
+**Recommendation:**
+
+- Development: Vercel Dashboard (no setup) + `/api/users` endpoint
+- Serious work: TablePlus (paid) or pgAdmin (free)
+- In-editor: SQLTools VS Code extension
+
+**Connection String Format:**
+
+```
+postgres://user:password@host:5432/database?sslmode=require
+```
+
+Get from: Vercel Dashboard → Your Project → Storage → Database → Settings → Connection String
 
 ---
 
