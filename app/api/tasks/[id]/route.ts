@@ -1,14 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
+import { auth } from "@/auth";
 
-// GET /api/tasks/[id] - Get a single task by ID from database
+// GET /api/tasks/[id] - Get a single task by ID from database (must belong to user)
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
-    const result = await sql`SELECT * FROM tasks WHERE id = ${id}`;
+    const result = await sql`
+      SELECT * FROM tasks 
+      WHERE id = ${id} AND user_id = ${parseInt(session.user.id)}
+    `;
 
     if (result.rows.length === 0) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
@@ -33,12 +42,17 @@ export async function GET(
   }
 }
 
-// PUT /api/tasks/[id] - Update a task by ID in database
+// PUT /api/tasks/[id] - Update a task by ID in database (must belong to user)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const { title, description, column } = body;
@@ -69,10 +83,13 @@ export async function PUT(
     }
 
     values.push(id); // Add ID as last parameter
+    values.push(parseInt(session.user.id!)); // Add user_id for ownership check
     const result = await sql.query(
       `UPDATE tasks SET ${updates.join(
         ", "
-      )} WHERE id = $${paramIndex} RETURNING *`,
+      )} WHERE id = $${paramIndex} AND user_id = $${
+        paramIndex + 1
+      } RETURNING *`,
       values
     );
 
@@ -99,14 +116,23 @@ export async function PUT(
   }
 }
 
-// DELETE /api/tasks/[id] - Delete a task by ID from database
+// DELETE /api/tasks/[id] - Delete a task by ID from database (must belong to user)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
-    const result = await sql`DELETE FROM tasks WHERE id = ${id} RETURNING id`;
+    const result = await sql`
+      DELETE FROM tasks 
+      WHERE id = ${id} AND user_id = ${parseInt(session.user.id)} 
+      RETURNING id
+    `;
 
     if (result.rows.length === 0) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });

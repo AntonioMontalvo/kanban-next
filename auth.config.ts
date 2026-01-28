@@ -1,5 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
+import { sql } from "@vercel/postgres";
 
 /**
  * NextAuth Configuration
@@ -26,22 +27,42 @@ export const authConfig = {
   callbacks: {
     // Called when user signs in
     async signIn({ user, account, profile }) {
-      // You can add custom logic here (e.g., save user to database)
-      console.log("User signed in:", user.email);
-      return true; // Allow sign in
+      try {
+        // Save or update user in database
+        if (user.email) {
+          const result = await sql`
+            INSERT INTO users (email, name, image)
+            VALUES (${user.email}, ${user.name}, ${user.image})
+            ON CONFLICT (email) 
+            DO UPDATE SET 
+              name = ${user.name},
+              image = ${user.image}
+            RETURNING id
+          `;
+
+          // Store the database ID in the user object
+          user.id = result.rows[0].id.toString();
+          console.log("User saved to database:", user.email, "ID:", user.id);
+        }
+        return true; // Allow sign in
+      } catch (error) {
+        console.error("Error saving user to database:", error);
+        return true; // Still allow sign in even if DB save fails
+      }
     },
 
     // Called whenever a session is checked
     async session({ session, token }) {
-      // Add custom data to the session
-      if (token.sub) {
-        session.user.id = token.sub;
+      // Add database user ID to session
+      if (token.id) {
+        session.user.id = token.id as string;
       }
       return session;
     },
 
     // Called when JWT is created or updated
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      // Store user ID in JWT token
       if (user) {
         token.id = user.id;
       }

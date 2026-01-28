@@ -31,7 +31,7 @@ interface DBTask {
  * - No API route needed
  * - Better for SEO
  * - Reduced client-side JavaScript
- * 
+ *
  * Note: Set to dynamic rendering to always fetch fresh data
  */
 
@@ -70,15 +70,19 @@ function DashboardSkeleton() {
 export default async function DashboardPage() {
   // Check if user is authenticated
   const session = await auth();
-  
+
   // If not authenticated, redirect to login
   if (!session?.user) {
     redirect("/login");
   }
 
-  // Fetch tasks directly from database
+  // Fetch tasks directly from database FOR THIS USER ONLY
   // This runs on the SERVER, not in the browser
-  const result = await sql<DBTask>`SELECT * FROM tasks`;
+  const result = await sql<DBTask>`
+    SELECT * FROM tasks 
+    WHERE user_id = ${parseInt(session.user.id!)}
+    ORDER BY created_at DESC
+  `;
   const tasks: DBTask[] = result.rows;
 
   // Calculate statistics
@@ -121,7 +125,11 @@ export default async function DashboardPage() {
               </svg>
               Back to Board
             </Link>
-          <UserMenu user={session.user} />
+            <UserMenu user={session.user} />
+          </div>
+        </div>
+
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Tasks Card */}
           <div className="bg-white rounded-lg shadow p-6">
