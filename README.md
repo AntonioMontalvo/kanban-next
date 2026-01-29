@@ -10,6 +10,32 @@ What this project covers: building a complete backend with PostgreSQL, implement
 
 > **Note**: Each user has their own isolated task workspace. Your tasks are private and only visible to you.
 
+### Screenshots
+
+**Authentication Flow**
+
+![Login Page](public/screenshots/01-login-page.png)
+_Login page with Google OAuth integration_
+
+![Google OAuth Consent](public/screenshots/02-google-oauth.png)
+_Google sign-in consent screen_
+
+**Main Features**
+
+![Kanban Board](public/screenshots/03-dashboard-main.png)
+_Main Kanban board with drag-and-drop functionality across To Do, In Progress, and Done columns_
+
+![Task Creation Modal](public/screenshots/04-task-modal.png)
+_Task creation modal with title, description, status, and priority fields_
+
+![User Menu](public/screenshots/05-user-menu.png)
+_User profile menu with authentication status and navigation options_
+
+**Analytics Dashboard**
+
+![Analytics Dashboard](public/screenshots/06-dashboard-analytics.png)
+_Real-time analytics dashboard showing task distribution, completion rate, status timeline, and activity trends using Recharts_
+
 ## ✨ Features
 
 ### Core Functionality
