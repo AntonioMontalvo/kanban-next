@@ -40,6 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Personal learning and progress tracking files
+# Documentation files
+# Exclude all .md files by default
 *.md
+# Except these public documentation files
 !README.md
+!MIGRATION_NOTES.md
+!NEXTJS_ENHANCEMENT_GUIDE.md
